@@ -179,35 +179,115 @@ class FileUpload {
         }
     }
 
-    createCard = function(fileInfo,str){
+    // createCard = function(fileInfo,str){
 
-        if (typeof(str) == 'undefined'){
-            str = '';
+    //     if (typeof(str) == 'undefined'){
+    //         str = '';
+    //     }
+
+    //     let id = this.fieldName+'-'+this.index;
+    //     let cardstr = `
+    //         <div>
+    //             <div class="card">
+    //                 <div class="card-image">` +
+    //                     this.preview(fileInfo,id,str)
+    //                     +`
+    //                     <span class='label'>`+fileInfo.name+`</span>
+    //                 </div>
+    //                 <div class="card-body">` +
+    //                     this.optionButtons(fileInfo)
+    //                     +`
+    //                 </div>
+    //             </div>
+    //             <div class="modal fade modal-dialog-centered" id="model-`+id+`" tabindex="-1" aria-hidden="true" style="display:none;">
+    //                 <div class="modal-dialog">
+    //                     <div class="modal-content">
+    //                     <div class="modal-header">
+    //                         <h5 class="modal-title" id="staticBackdropLabel">`+str+`</h5>
+    //                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    //                     </div>
+    //                     <div class="modal-body" style="position:relative;">
+    //                         <img id="model-img-`+id+`" src="`+str+`" style="width:100%;">
+    //                         </div>
+    //                     </div>
+    //                 </div>
+    //             </div>
+    //         </div>
+    //         `;
+
+    //     let cardHolder = this.htmlToElement(cardstr);
+    //     let card = cardHolder.querySelector(".card");
+    //     let modal = cardHolder.querySelector(".modal");
+    //     let preview = card.querySelector(".preview");
+    //     card.dataset.name = fileInfo.name;
+    //     card.dataset.filepath = fileInfo.filepath;
+
+    //     if (this.options.delete){
+    //         let removeBtn = card.querySelector(".icon-trash");
+    //         removeBtn.ref = this;
+    //         removeBtn.addEventListener("click",function(event){
+    //             event.currentTarget.ref.removeFile(event.currentTarget);
+    //             event.preventDefault();
+    //         });
+    //     }
+
+    //     if (this.options.download){
+    //         let downloadBtn = card.querySelector(".icon-download");
+    //         downloadBtn.href = str;
+    //         downloadBtn.target = "_blank";
+    //         downloadBtn.download = str;
+    //     }
+
+    //     if (fileInfo.uploading){
+    //         this.new_files.appendChild(card);
+    //     }else{
+    //         this.existing_files.appendChild(card);
+    //     }
+    //     this.holder.appendChild(modal);
+    //     this.holder.classList.remove("d-none");
+    //     this.hasCard = true;
+
+    //     this.index ++;
+
+    //     return preview;
+    // }
+
+    createCard = function(fileInfo, str) {
+        // Kiểm tra nếu str không được định nghĩa hoặc là chuỗi rỗng
+        if (typeof(str) === 'undefined' || str === '') {
+            str = ''; // Thiết lập str thành rỗng
         }
-
-        let id = this.fieldName+'-'+this.index;
+        else {
+            // Kiểm tra nếu str đã chứa tiền tố "http://127.0.0.1:8000/storage/"
+            if (str.includes('http://127.0.0.1:8000/storage/')) {
+                // Nếu có tiền tố, loại bỏ nó
+                str = str.replace('http://127.0.0.1:8000/storage/', '');
+            }
+        }
+        console.log(str);
+        let id = this.fieldName + '-' + this.index;
         let cardstr = `
             <div>
                 <div class="card">
                     <div class="card-image">` +
-                        this.preview(fileInfo,id,str)
+                        this.preview(fileInfo, id, str)
                         +`
-                        <span class='label'>`+fileInfo.name+`</span>
+                        <span class='label'>` + fileInfo.name + `</span>
                     </div>
                     <div class="card-body">` +
                         this.optionButtons(fileInfo)
                         +`
                     </div>
                 </div>
-                <div class="modal fade modal-dialog-centered" id="model-`+id+`" tabindex="-1" aria-hidden="true" style="display:none;">
+                <div class="modal fade modal-dialog-centered" id="model-` + id + `" tabindex="-1" aria-hidden="true" style="display:none;">
                     <div class="modal-dialog">
                         <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="staticBackdropLabel">`+str+`</h5>
+                            <h5 class="modal-title">` + fileInfo.name + `</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body" style="position:relative;">
-                            <img id="model-img-`+id+`" src="`+str+`" style="width:100%;">
+                            <img id="model-img-` + id + `" src="`+ str +`" style="width:100%;">
                             </div>
                         </div>
                     </div>
@@ -222,32 +302,32 @@ class FileUpload {
         card.dataset.name = fileInfo.name;
         card.dataset.filepath = fileInfo.filepath;
 
-        if (this.options.delete){
+        if (this.options.delete) {
             let removeBtn = card.querySelector(".icon-trash");
             removeBtn.ref = this;
-            removeBtn.addEventListener("click",function(event){
+            removeBtn.addEventListener("click", function(event) {
                 event.currentTarget.ref.removeFile(event.currentTarget);
                 event.preventDefault();
             });
         }
 
-        if (this.options.download){
+        if (this.options.download) {
             let downloadBtn = card.querySelector(".icon-download");
-            downloadBtn.href = str;
+            downloadBtn.href = 'http://127.0.0.1:8000/storage/' + str;
             downloadBtn.target = "_blank";
-            downloadBtn.download = str;
+            downloadBtn.download = fileInfo.name;
         }
 
-        if (fileInfo.uploading){
+        if (fileInfo.uploading) {
             this.new_files.appendChild(card);
-        }else{
+        } else {
             this.existing_files.appendChild(card);
         }
         this.holder.appendChild(modal);
         this.holder.classList.remove("d-none");
         this.hasCard = true;
 
-        this.index ++;
+        this.index++;
 
         return preview;
     }

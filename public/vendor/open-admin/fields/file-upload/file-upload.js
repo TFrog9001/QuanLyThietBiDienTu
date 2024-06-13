@@ -253,14 +253,11 @@ class FileUpload {
     // }
 
     createCard = function(fileInfo, str) {
-        // Kiểm tra nếu str không được định nghĩa hoặc là chuỗi rỗng
         if (typeof(str) === 'undefined' || str === '') {
-            str = ''; // Thiết lập str thành rỗng
+            str = '';
         }
         else {
-            // Kiểm tra nếu str đã chứa tiền tố "http://127.0.0.1:8000/storage/"
             if (str.includes('http://127.0.0.1:8000/storage/')) {
-                // Nếu có tiền tố, loại bỏ nó
                 str = str.replace('http://127.0.0.1:8000/storage/', '');
             }
         }

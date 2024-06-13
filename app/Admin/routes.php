@@ -12,5 +12,6 @@ Route::group([
 ], function (Router $router) {
 
     $router->get('/', 'HomeController@index')->name('home');
-
+    $router->resource('districts', DistrictController::class);
+    $router->resource('post-offices', PostOfficeController::class);
 });

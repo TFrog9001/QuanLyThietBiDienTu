@@ -10,6 +10,13 @@ class Device extends Model
 
     protected $primaryKey = 'device_id';
 
+    protected $fillable = [
+        'serial_number',
+        'device_name',
+        'device_type_id',
+        'warranty_expiry',
+    ];
+
     public $timestamps = false;
 
 }

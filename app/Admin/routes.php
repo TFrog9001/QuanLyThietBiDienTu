@@ -18,5 +18,7 @@ Route::group([
     $router->resource('device-types', DeviceTypeController::class);
     $router->resource('devices', DeviceController::class);
 
+    $router->resource('device-receipts', DeviceReceiptsController::class);
+
     $router->resource('agencies', AgencyController::class);
 });

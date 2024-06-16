@@ -19,4 +19,8 @@ class Device extends Model
 
     public $timestamps = false;
 
+    public function receiptDetails()
+    {
+        return $this->hasMany(DeviceReceiptDetail::class, 'device_id', 'deive_id');
+    }
 }

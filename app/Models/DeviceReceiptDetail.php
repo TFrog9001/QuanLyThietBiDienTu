@@ -20,11 +20,11 @@ class DeviceReceiptDetail extends Model
 
     public function device()
     {
-        return $this->belongsTo(Device::class, 'device_id');
+        return $this->belongsTo(Device::class, 'device_id', 'device_id');
     }
 
     public function receipt()
     {
-        return $this->belongsTo(DeviceReceipt::class, 'receipt_id');
+        return $this->belongsTo(DeviceReceipt::class, 'receipt_id', 'receipt_id');
     }
 }

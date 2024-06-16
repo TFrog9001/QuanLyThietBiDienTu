@@ -80,7 +80,7 @@ class PostOfficeController extends AdminController
         // Dropdown để chọn quận/huyện từ bảng District
         $form->select('district_id', __('District'))->options(function () {
             return District::pluck('district_name', 'district_id');
-        });
+        })->default(request('district_id'));
 
         return $form;
     }

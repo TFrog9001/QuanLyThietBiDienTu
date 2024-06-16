@@ -7,7 +7,7 @@ use OpenAdmin\Admin\Form;
 use OpenAdmin\Admin\Grid;
 use OpenAdmin\Admin\Show;
 use \App\Models\District;
-
+use App\Models\PostOffice;
 class DistrictController extends AdminController
 {
     /**
@@ -53,6 +53,19 @@ class DistrictController extends AdminController
 
         $show->field('district_id', __('District ID'));
         $show->field('district_name', __('District name'));
+
+        $show->relation('postOffices', function ($grid) {
+            $grid->model()->orderBy('post_office_id', 'asc');
+            $grid->column('post_office_id', __('Post office ID'));
+            $grid->column('post_office_name', __('Post office name'));
+            $grid->setResource('/admin/post-offices');
+
+            $grid->actions(function ($actions) {
+                $actions->disableDelete(false);
+                $actions->disableEdit(false);
+                $actions->disableView(false);
+            });
+        });
 
         return $show;
     }

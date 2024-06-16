@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class DeviceReceipt extends Model
 {
@@ -37,13 +36,18 @@ class DeviceReceipt extends Model
         });
     }
 
-    public function devices(): HasMany
+    public function agency()
     {
-        return $this->hasMany(DeviceReceiptDetail::class, 'receipt_id');
+        return $this->belongsTo(Agency::class, 'agency_id', 'agency_id');
     }
 
-    public function details(): HasMany
+    public function user()
     {
-        return $this->hasMany(DeviceReceiptDetail::class, 'receipt_id');
+        return $this->belongsTo(AdminUser::class, 'user_id', 'id');
+    }
+
+    public function details()
+    {
+        return $this->hasMany(DeviceReceiptDetail::class, 'receipt_id', 'receipt_id');
     }
 }

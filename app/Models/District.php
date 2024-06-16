@@ -14,6 +14,6 @@ class District extends Model
 
     public function postOffices()
     {
-        return $this->hasMany(PostOffice::class);
+        return $this->hasMany(PostOffice::class, 'district_id', 'district_id');
     }
 }

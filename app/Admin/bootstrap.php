@@ -19,3 +19,5 @@
  */
 
 OpenAdmin\Admin\Form::forget(['editor']);
+
+Admin::js('https://code.jquery.com/jquery-3.6.0.min.js');

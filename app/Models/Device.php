@@ -15,12 +15,17 @@ class Device extends Model
         'device_name',
         'device_type_id',
         'warranty_expiry',
+        'state',
     ];
 
     public $timestamps = false;
 
     public function receiptDetails()
     {
-        return $this->hasMany(DeviceReceiptDetail::class, 'device_id', 'deive_id');
+        return $this->hasMany(DeviceReceiptDetail::class, 'device_id', 'device_id');
+    }
+
+    public function type(){
+        return $this->belongsTo(DeviceType::class, 'device_type_id', 'device_type_id');
     }
 }

@@ -2,6 +2,10 @@
 
 use Illuminate\Routing\Router;
 
+use App\Admin\Controllers\DeviceExportController;
+use Illuminate\Http\Request;
+use App\Models\PostOffice;
+
 Admin::routes();
 
 Route::group([
@@ -19,6 +23,11 @@ Route::group([
     $router->resource('devices', DeviceController::class);
 
     $router->resource('device-receipts', DeviceReceiptsController::class);
+    $router->resource('device-exports', DeviceExportController::class);
 
     $router->resource('agencies', AgencyController::class);
+
 });
+
+Route::post('api/post-offices', [DeviceExportController::class, 'getPostOffices']);
+Route::get('api/post-offices', [DeviceExportController::class, 'getPostOffices']);

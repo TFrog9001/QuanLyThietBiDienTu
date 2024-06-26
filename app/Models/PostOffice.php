@@ -10,10 +10,21 @@ class PostOffice extends Model
 
     protected $primaryKey = 'post_office_id';
 
+    protected $fillable = [
+        'post_office_name',
+        'district_id',
+    ];
+
     public $timestamps = false;
 
     public function district()
     {
-        return $this->belongsTo(District::class, 'district_id', 'district_id');
+        return $this->belongsTo(District::class, 'district_id');
     }
+
+    public function deviceExports()
+    {
+        return $this->hasMany(DeviceExport::class, 'post_office_id');
+    }
+
 }

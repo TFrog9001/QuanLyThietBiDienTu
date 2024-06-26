@@ -88,28 +88,29 @@ class DeviceReceiptsController extends AdminController
         $show->field('total_amount', __('Total Amount'));
 
         // Hiển thị thông tin chi tiết thiết bị
+
         $show->relation('details', function ($grid) {
-            // $grid = new Grid(new Device());
-            // Use the device relation within the details to display the device information
+
             $grid->column('device.device_name', __('Device Name'));
             $grid->column('device.serial_number', __('Serial Number'));
             $grid->column('device.device_type_id', __('Device Type'));
             $grid->column('device.warranty_expiry', __('Warranty Expiry'))->dateFormat('d-m-Y');
             $grid->column('price', __('Price'));
+            $grid->column('device.state', __('State'));
             $grid->setResource('/admin/devices');
         });
 
 
         // Adding print button
-        // $show->panel()->tools(function ($tools) {
-        //     $tools->disableEdit();
-        //     $tools->disableList();
-        //     $tools->disableDelete();
+        $show->panel()->tools(function ($tools) {
+            $tools->disableEdit();
+            $tools->disableList();
+            $tools->disableDelete();
 
-        //     $tools->append('<button id="printButton" class="btn btn-primary">In</button>');
-        // });
+            // $tools->append('<button id="printButton" class="btn btn-primary">In</button>');
+        });
 
-        // // JavaScript for printing with embedded CSS
+        // JavaScript for printing with embedded CSS
         // Admin::script(
         //     <<<JS
 
@@ -215,6 +216,7 @@ class DeviceReceiptsController extends AdminController
         //         printWindow.print();
         //         printWindow.close();
         //     });
+
         // JS
         // );
 

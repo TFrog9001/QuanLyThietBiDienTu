@@ -69,12 +69,11 @@ class DeviceExportController extends AdminController
 
         $show->field('export_id', __('Export id'));
         $show->field('post_office_id', __('Post office id'));
+        $show->field('postOffice.post_office_name', __('Post office'));
         $show->field('user_id', __('User id'));
         $show->field('export_date', __('Export date'));
 
-        $show->relation('details', function ($grid) {
-            // $grid = new Grid(new Device());
-            // Use the device relation within the details to display the device information
+        $show->relation('deviceExportDetails', function ($grid) {
             $grid->column('device.device_name', __('Device Name'));
             $grid->column('device.serial_number', __('Serial Number'));
             $grid->column('device.device_type_id', __('Device Type'));

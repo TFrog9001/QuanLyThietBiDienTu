@@ -2,12 +2,15 @@
 
 namespace App\Admin\Controllers;
 
+use App\Models\DeviceExport;
 use OpenAdmin\Admin\Controllers\AdminController;
 use OpenAdmin\Admin\Form;
 use OpenAdmin\Admin\Grid;
 use OpenAdmin\Admin\Show;
 use \App\Models\District;
 use App\Models\PostOffice;
+use App\Models\Device;
+
 class DistrictController extends AdminController
 {
     /**
@@ -26,7 +29,7 @@ class DistrictController extends AdminController
     {
         $grid = new Grid(new District());
 
-        $grid->filter(function($filter){
+        $grid->filter(function ($filter) {
             // Xóa bộ lọc mặc định theo ID
             $filter->disableIdFilter();
 
@@ -53,6 +56,21 @@ class DistrictController extends AdminController
 
         $show->field('district_id', __('District ID'));
         $show->field('district_name', __('District name'));
+
+        $show->relation('exportedDevices', function ($grid) use ($id) {
+            $grid->model()->select('devices.*', 'post_office.*')
+                ->join('device_export_details', 'device_export_details.export_id', '=', 'device_exports.export_id')
+                ->join('devices', 'devices.device_id', '=', 'device_export_details.device_id');
+
+            $grid->column('device_id', 'ID');
+            $grid->column('serial_number', 'Serial Number');
+            $grid->column('device_name', 'Device Name');
+            $grid->column('warranty_expiry', 'Warranty Expiry');
+            $grid->column('post_office_name', 'Post Office');
+
+            $grid->disableCreateButton();
+            $grid->disableActions();
+        });
 
         $show->relation('postOffices', function ($grid) {
             $grid->model()->orderBy('post_office_id', 'asc');

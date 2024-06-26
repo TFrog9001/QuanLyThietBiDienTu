@@ -8,6 +8,7 @@ use OpenAdmin\Admin\Grid;
 use OpenAdmin\Admin\Show;
 use App\Models\PostOffice;
 use App\Models\District;
+use App\Models\Device;
 
 class PostOfficeController extends AdminController
 {
@@ -53,13 +54,15 @@ class PostOfficeController extends AdminController
      */
     protected function detail($id)
     {
-        $show = new Show(PostOffice::findOrFail($id));
+        $postOffice = PostOffice::findOrFail($id);
+
+        $show = new Show($postOffice);
 
         $show->field('post_office_id', __('Post office ID'));
         $show->field('post_office_name', __('Post office name'));
-        $show->field('district_id', __('District ID'))->as(function ($district_id) {
+        $show->field('district_id', __('District'))->as(function ($district_id) {
             $district = District::findOrFail($district_id);
-            return $district->district_name;
+            return $district->district_name . ' ('. $this->district_id .')';
         });
 
         return $show;
@@ -77,7 +80,7 @@ class PostOfficeController extends AdminController
         $form->text('post_office_id', __('Post office ID'));
         $form->text('post_office_name', __('Post office name'));
 
-        // Dropdown để chọn quận/huyện từ bảng District
+        // Dropdown to select district from District table
         $form->select('district_id', __('District'))->options(function () {
             return District::pluck('district_name', 'district_id');
         })->default(request('district_id'));

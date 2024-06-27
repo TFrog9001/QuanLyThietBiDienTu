@@ -41,6 +41,17 @@ class DistrictController extends AdminController
         $grid->column('district_id', __('District ID'));
         $grid->column('district_name', __('District name'));
 
+        $grid->model()->leftJoin('post_office', 'district.district_id', '=', 'post_office.district_id')
+            ->leftJoin('device_exports', 'post_office.post_office_id', '=', 'device_exports.post_office_id')
+            ->leftJoin('device_export_details', 'device_exports.export_id', '=', 'device_export_details.export_id')
+            ->leftJoin('devices', 'device_export_details.device_id', '=', 'devices.device_id')
+            ->select('district.district_id', 'district.district_name', \DB::raw('COUNT(devices.device_id) as devices_count'))
+            ->groupBy('district.district_id', 'district.district_name');
+
+        $grid->column('devices_count', __('Devices Count'))->display(function ($devices_count) {
+            return $devices_count;
+        });
+
         return $grid;
     }
 

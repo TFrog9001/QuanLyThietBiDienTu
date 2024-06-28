@@ -72,7 +72,7 @@ class DeviceExportController extends AdminController
         $show->field('export_id', __('Export id'));
         $show->field('post_office_id', __('Post office id'));
         $show->field('postOffice.post_office_name', __('Post office'));
-        $show->field('user_id', __('User id'))->as(function ($userId){
+        $show->field('user_id', __('User id'))->as(function ($userId) {
             $user = AdminUser::findOrFail($userId);
             return $user ? $user->name . ' (ID: ' . $user->id . ')' : 'Unknown User';
         });
@@ -84,128 +84,123 @@ class DeviceExportController extends AdminController
             $grid->column('device.device_type_id', __('Device Type'));
             $grid->column('device.warranty_expiry', __('Warranty Expiry'))->dateFormat('d-m-Y');
             $grid->setResource('/admin/devices');
+            $grid->disableCreateButton();
+            $grid->disableActions();
         });
+        $postOfficeAdd = $export->postOffice->post_office_name .' - '.$export->postOffice->district->district_name;
 
-        $show->panel()->tools(function ($tools) use ($export) {
+        $exportDeviceHtml = '';
+        $count = 1;
+
+        foreach ($export->deviceExportDetails as $detail) {
+            $exportDeviceHtml .= '<tr>';
+            $exportDeviceHtml .= '<td style="border: 1px solid #000; padding: 8px;">' . $count++ . '</td>';
+            $exportDeviceHtml .= '<td style="border: 1px solid #000; padding: 8px; text-align: left;">' . e($detail->device->device_name) . '</td>';
+            $exportDeviceHtml .= '<td style="border: 1px solid #000; padding: 8px; text-align: left;">' . e($detail->device->serial_number) . '</td>';
+            $exportDeviceHtml .= '<td style="border: 1px solid #000; padding: 8px; text-align: center;">' . date('d-m-Y', strtotime($detail->device->warranty_expiry)) . '</td>';
+            $exportDeviceHtml .= '</tr>';
+        }
+
+        $show->panel()->tools(function ($tools) use ($export, $exportDeviceHtml) {
             $tools->disableEdit();
             $tools->disableList();
             $tools->disableDelete();
 
             $tools->append('<button id="printExportButton" class="btn btn-primary">Print Handover Note</button>');
-
-            Admin::script(<<<JS
-                document.getElementById("printExportButton").addEventListener("click", function() {
-                    console.log('Ok load');
-                    var newWindowContent = `
-                        <!DOCTYPE html>
-                        <html>
-                        <head>
-                            <title>Trang In</title>
-                            <style>
-                                @media print {
-                                    body {
-                                        font-family: "Times New Roman", Times, serif;
-                                        margin: 0;
-                                        padding: 0;
-                                    }
-                                    @page {
-                                        margin: 0;
-                                    }
-                                    p {
-                                        margin: 0px 0px 10px 0px;
-                                    }
-                                }
-                            </style>
-                        </head>
-                        <body>
-                            <div style="position: absolute; top: 300; left: 0; right: 0; text-align: center; z-index: 0;">
-                                <img style="opacity: 0.3;" src="logo.png" alt="Logo">
-                            </div>
-                            <div style="position: relative; z-index: 1;">
-                                <p style="font-size: 23px; font-weight: bold; text-align: center; padding-top: 50px; margin: 0px;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
-                                <p style="font-size: 21px; font-weight: bold; text-align: center; margin: 5px 0px 0px 0px;">Độc lập – Tự do – Hạnh phúc</p>
-                                <p style="font-size: 23px; font-weight: bold; text-align: center; margin: 0px 0px 0px 0px;">-------------------------------------------</p>
-                                <p style="font-size: 23px; font-weight: bold; text-align: center; margin: 30px 0px 30px 0px;">BIÊN BẢN GIAO NHẬN</p>
-                                <p style="font-size: 18px; margin-left: 100px;">Hôm nay, ngày ... tháng ... năm ...</p>
-                                <p style="font-size: 18px; font-weight: bold; margin-left: 100px;">BÊN A (BÊN GIAO, Phòng Kỹ Thuật Nghiệp Vụ): </p>
-                                <div style="display:flex;">
-                                    <p style="font-size: 18px; margin-left: 100px;">- Ông / Bà: <input type="text" style="border-style:hidden; font-size: 18px; font-family: 'Times New Roman';" placeholder="Nhấn để nhập thông tin"/></p>
-                                    <p style="font-size: 18px; margin-left: 50px;">- Chức vụ: <input type="text" style="border-style:hidden; font-size: 18px; font-family: 'Times New Roman';" placeholder="Nhấn để nhập thông tin"/></p>
-                                </div>
-                                <p style="font-size: 18px; font-weight: bold; margin-left: 100px;">BÊN B (BÊN NHẬN, ): </p>
-                                <div style="display:flex;">
-                                    <p style="font-size: 18px; margin-left: 100px;">- Ông / Bà: <input type="text" style="border-style:hidden; font-size: 18px; font-family: 'Times New Roman';" placeholder="Nhấn để nhập thông tin"/></p>
-                                    <p style="font-size: 18px; margin-left: 50px;">- Chức vụ: <input type="text" style="border-style:hidden; font-size: 18px; font-family: 'Times New Roman';" placeholder="Nhấn để nhập thông tin"/></p>
-                                </div>
-                                <p style="font-size: 18px; font-weight: bold; margin-left: 100px;">Nội dung:</p>
-                                <p style="font-size: 18px; margin-left: 100px;">Hai bên cùng tiến hành bàn giao nhận thiết bị cụ thế như sau:</p>
-                                <table style="width: 95%; border-collapse: collapse; text-align: center; margin: 0px 0px 0px 20px;">
-                                    <thead>
-                                        <tr>
-                                            <th style="border: 1px solid #000; padding: 8px;">STT</th>
-                                            <th style="border: 1px solid #000; padding: 8px; text-align: center;">Tên thiết bị</th>
-                                            <th style="border: 1px solid #000; padding: 8px; text-align: center;">Serial Number</th>
-                                            <th style="border: 1px solid #000; padding: 8px; text-align: center;">Thời hạn bảo hành</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                            // List các thiết bị ở đây
-                                    </tbody>
-                                </table>
-                                <p style="font-size: 18px; margin: 20px 0px 0px 100px;">Bên B đã nhận đủ số lượng và chất lượng đạt yêu cầu.</p>
-                                <p style="font-size: 18px; margin: 0px 0px 50px 100px;">Biên bản được lập thành 03 bản có giá trị như nhau, bên A giữ 02 bản, bên B giữ 01 bản.</p>
-                                <table style="width: 100%;">
-                                    <thead>
-                                        <tr>
-                                            <th style="font-size: 18px; font-weight: bold; text-align: center; padding-bottom: 150px;">XÁC NHẬN BÊN A</th>
-                                            <th style="font-size: 18px; font-weight: bold; text-align: center; padding-bottom: 150px;">XÁC NHẬN BÊN B</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td style="font-size: 18px; font-weight: bold; text-align: center;"></td>
-                                            <td style="font-size: 18px; font-weight: bold; text-align: center;"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </body>
-                        </html>
-                    `;
-
-                    var newWindow = window.open("", "_blank");
-                    if (newWindow) {
-                        newWindow.document.open();
-                        newWindow.document.write(newWindowContent);
-                        newWindow.document.close();
-                    } else {
-                        alert("Popup blocked. Please allow popups for this site.");
-                    }
-                });
-            JS);
         });
 
+        Admin::script(<<<JS
+            document.getElementById("printExportButton").addEventListener("click", function() {
+                var newWindowContent = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Trang In</title>
+                        <style>
+                            @media print {
+                                body {
+                                    font-family: "Times New Roman", Times, serif;
+                                    margin: 0;
+                                    padding: 0;
+                                }
+                                @page {
+                                    margin: 0;
+                                }
+                                p {
+                                    margin: 0px 0px 10px 0px;
+                                }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div style="position: absolute; top: 300; left: 0; right: 0; text-align: center; z-index: 0;">
+                            <img style="opacity: 0.3;" src="http://127.0.0.1:8000/storage/images/minilogo.png" alt="Logo">
+                        </div>
+                        <div style="position: relative; z-index: 1;">
+                            <p style="font-size: 23px; font-weight: bold; text-align: center; padding-top: 50px; margin: 0px;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
+                            <p style="font-size: 21px; font-weight: bold; text-align: center; margin: 5px 0px 0px 0px;">Độc lập – Tự do – Hạnh phúc</p>
+                            <p style="font-size: 23px; font-weight: bold; text-align: center; margin: 0px 0px 0px 0px;">-------------------------------------------</p>
+                            <p style="font-size: 23px; font-weight: bold; text-align: center; margin: 30px 0px 30px 0px;">BIÊN BẢN GIAO NHẬN</p>
+                            <p style="font-size: 18px; margin-left: 100px;">Hôm nay, ngày ... tháng ... năm ...</p>
+                            <p style="font-size: 18px; font-weight: bold; margin-left: 100px;">BÊN A (BÊN GIAO, Phòng Kỹ Thuật Nghiệp Vụ): </p>
+                            <div style="display:flex;">
+                                <p style="font-size: 18px; margin-left: 100px;">- Ông / Bà: <input type="text" style="border-style:hidden; font-size: 18px; font-family: 'Times New Roman';" placeholder="Nhấn để nhập thông tin"/></p>
+                                <p style="font-size: 18px; margin-left: 50px;">- Chức vụ: <input type="text" style="border-style:hidden; font-size: 18px; font-family: 'Times New Roman';" placeholder="Nhấn để nhập thông tin"/></p>
+                            </div>
+                            <p style="font-size: 18px; font-weight: bold; margin-left: 100px;">BÊN B (BÊN NHẬN, ${postOfficeAdd}): </p>
+                            <div style="display:flex;">
+                                <p style="font-size: 18px; margin-left: 100px;">- Ông / Bà: <input type="text" style="border-style:hidden; font-size: 18px; font-family: 'Times New Roman';" placeholder="Nhấn để nhập thông tin"/></p>
+                                <p style="font-size: 18px; margin-left: 50px;">- Chức vụ: <input type="text" style="border-style:hidden; font-size: 18px; font-family: 'Times New Roman';" placeholder="Nhấn để nhập thông tin"/></p>
+                            </div>
+                            <p style="font-size: 18px; font-weight: bold; margin-left: 100px;">Nội dung:</p>
+                            <p style="font-size: 18px; margin-left: 100px;">Hai bên cùng tiến hành bàn giao nhận thiết bị cụ thế như sau:</p>
+                            <table style="width: 75%; border-collapse: collapse; text-align: center; margin: 0px 0px 0px 100px;">
+                                <thead>
+                                    <tr>
+                                        <th style="border: 1px solid #000; padding: 8px;">STT</th>
+                                        <th style="border: 1px solid #000; padding: 8px; text-align: center;">Tên thiết bị</th>
+                                        <th style="border: 1px solid #000; padding: 8px; text-align: center;">Serial Number</th>
+                                        <th style="border: 1px solid #000; padding: 8px; text-align: center;">Thời hạn bảo hành</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${exportDeviceHtml}
+                                </tbody>
+                            </table>
+                            <p style="font-size: 18px; margin: 20px 0px 0px 100px;">Bên B đã nhận đủ số lượng và chất lượng đạt yêu cầu.</p>
+                            <p style="font-size: 18px; margin: 0px 0px 50px 100px;">Biên bản được lập thành 03 bản có giá trị như nhau, bên A giữ 02 bản, bên B giữ 01 bản.</p>
+                            <table style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th style="font-size: 18px; font-weight: bold; text-align: center; padding-bottom: 150px;">XÁC NHẬN BÊN A</th>
+                                        <th style="font-size: 18px; font-weight: bold; text-align: center; padding-bottom: 150px;">XÁC NHẬN BÊN B</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="font-size: 18px; font-weight: bold; text-align: center;"></td>
+                                        <td style="font-size: 18px; font-weight: bold; text-align: center;"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </body>
+                    </html>
+                `;
+
+                var newWindow = window.open("", "_blank");
+                if (newWindow) {
+                    newWindow.document.open();
+                    newWindow.document.write(newWindowContent);
+                    newWindow.document.close();
+                } else {
+                    alert("Popup blocked. Please allow popups for this site.");
+                }
+            });
+        JS);
+
         return $show;
-
     }
-
-    // Các method để lấy thông tin chi tiết
-    protected function getUserDetails($userId)
-    {
-        $user = AdminUser::find($userId);
-        return $user ? $user->name . ' (ID: ' . $user->id . ')' : 'Unknown User';
-    }
-
-    protected function getDeviceDetails($exportId)
-    {
-        $details = DeviceExportDetail::where('export_id', $exportId)->get();
-        $deviceDetails = '';
-        foreach ($details as $detail) {
-            $deviceDetails .= "Device Name: {$detail->device->device_name}, Serial Number: {$detail->device->serial_number}, Device Type: {$detail->device->device_type_id}, Warranty Expiry: {$detail->device->warranty_expiry}\n";
-        }
-        return $deviceDetails;
-    }
-
 
     protected function form()
     {

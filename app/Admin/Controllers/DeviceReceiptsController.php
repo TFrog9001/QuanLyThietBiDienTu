@@ -98,127 +98,15 @@ class DeviceReceiptsController extends AdminController
             $grid->column('price', __('Price'));
             $grid->column('device.state', __('State'));
             $grid->setResource('/admin/devices');
+            $grid->disableCreateButton();
+            $grid->disableActions();
         });
 
-
-        // Adding print button
-        $show->panel()->tools(function ($tools) {
+        $show->panel()->tools(function ($tools){
             $tools->disableEdit();
-            $tools->disableList();
-            $tools->disableDelete();
-
-            // $tools->append('<button id="printButton" class="btn btn-primary">In</button>');
+            // $tools->disableList();
+            // $tools->disableDelete();
         });
-
-        // JavaScript for printing with embedded CSS
-        // Admin::script(
-        //     <<<JS
-
-        //     $('#printButton').click(function() {
-        //         var printContents = $('#app').html();  // Select the #app element to capture all content within it
-        //         var css = `
-        //             body {
-        //                 font-family: Arial, sans-serif;
-        //             }
-        //             #app {
-        //                 margin: 20px;
-        //                 padding: 20px;
-        //                 border: 1px solid #000;
-        //                 max-width: 800px;
-        //                 background: #fff;
-        //             }
-        //             .content-header h1 {
-        //                 text-align: center;
-        //                 margin-bottom: 20px;
-        //             }
-        //             .breadcrumb {
-        //                 margin-bottom: 20px;
-        //                 padding: 10px 0;
-        //                 list-style: none;
-        //                 background-color: transparent;
-        //             }
-        //             .card {
-        //                 margin-bottom: 20px;
-        //                 padding: 20px;
-        //                 border: 1px solid #ccc;
-        //                 background: #f9f9f9;
-        //             }
-        //             .card-header {
-        //                 font-weight: bold;
-        //                 font-size: 1.2em;
-        //                 margin-bottom: 10px;
-        //             }
-        //             .form-horizontal .row {
-        //                 margin-bottom: 10px;
-        //             }
-        //             .form-label {
-        //                 font-weight: bold;
-        //             }
-        //             .show-value {
-        //                 padding-left: 10px;
-        //             }
-        //             .table {
-        //                 width: 100%;
-        //                 margin-bottom: 20px;
-        //                 border-collapse: collapse;
-        //             }
-        //             .table th,
-        //             .table td {
-        //                 border: 1px solid #000;
-        //                 padding: 8px;
-        //                 text-align: left;
-        //             }
-        //             .table th {
-        //                 background: #f2f2f2;
-        //             }
-        //             .table-responsive {
-        //                 overflow-x: auto;
-        //             }
-        //             footer {
-        //                 display: flex;
-        //                 justify-content: space-between;
-        //                 align-items: center;
-        //                 padding: 10px 0;
-        //                 border-top: 1px solid #ccc;
-        //             }
-        //             .pagination {
-        //                 margin: 0;
-        //             }
-        //             .pagination .page-item {
-        //                 display: inline;
-        //             }
-        //             .pagination .page-link {
-        //                 padding: 5px 10px;
-        //                 margin: 0 2px;
-        //                 border: 1px solid #ccc;
-        //                 color: #000;
-        //                 text-decoration: none;
-        //             }
-        //             #printButton {
-        //                 display: block;
-        //                 margin: 20px auto;
-        //                 padding: 10px 20px;
-        //                 background: #007bff;
-        //                 color: #fff;
-        //                 border: none;
-        //                 cursor: pointer;
-        //                 font-size: 1em;
-        //             }
-        //             #printButton:hover {
-        //                 background: #0056b3;
-        //             }
-        //         `;
-        //         var printWindow = window.open("", "", "width=800,height=600");
-        //         printWindow.document.write('<html><head><title>Print Receipt</title><style>' + css + '</style></head><body>');
-        //         printWindow.document.write(printContents);
-        //         printWindow.document.write('</body></html>');
-        //         printWindow.document.close();
-        //         printWindow.print();
-        //         printWindow.close();
-        //     });
-
-        // JS
-        // );
 
         return $show;
     }

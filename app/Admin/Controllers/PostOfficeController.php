@@ -65,6 +65,23 @@ class PostOfficeController extends AdminController
             return $district->district_name . ' ('. $this->district_id .')';
         });
 
+        $show->relation('deviceExports', function ($grid) use ($id) {
+            $grid->model()->select('devices.*')
+                ->join('device_export_details', 'device_export_details.export_id', '=', 'device_exports.export_id')
+                ->join('devices', 'devices.device_id', '=', 'device_export_details.device_id');
+
+            $grid->column('device_id', 'ID');
+            $grid->column('serial_number', 'Serial Number');
+            $grid->column('device_name', 'Device Name');
+            $grid->column('warranty_expiry', 'Warranty Expiry');
+            $grid->column('post_office_name', 'Post Office');
+
+            $grid->disableCreateButton();
+            $grid->disableActions();
+        });
+
+
+
         return $show;
     }
 

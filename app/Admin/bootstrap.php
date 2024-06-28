@@ -21,3 +21,4 @@
 OpenAdmin\Admin\Form::forget(['editor']);
 
 Admin::js('https://code.jquery.com/jquery-3.6.0.min.js');
+Admin::js('http://127.0.0.1:8000/vendor/open-admin/open-admin/js/print.js');

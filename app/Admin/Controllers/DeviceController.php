@@ -31,8 +31,19 @@ class DeviceController extends AdminController
         $grid->column('device_id', __('Device id'));
         $grid->column('serial_number', __('Serial number'));
         $grid->column('device_name', __('Device name'));
-        $grid->column('device_type_id', __('Device type id'));
+        $grid->column('type.device_type_name', __('Type'));
         $grid->column('warranty_expiry', __('Warranty expiry'));
+        $grid->column('state', __('State'));
+
+        $grid->filter(function ($filter) {
+            $filter->disableIdFilter();
+
+            $filter->equal('device_type_id', 'DeviceType')->select(function () {
+                return DeviceType::pluck('device_type_name', 'device_type_id');
+            });
+
+            $filter->like('serial_number', 'Serial Number');
+        });
 
         return $grid;
     }

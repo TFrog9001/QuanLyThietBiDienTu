@@ -27,7 +27,7 @@ class Device extends Model
 
     public function type()
     {
-        return $this->belongsTo(DeviceType::class, 'device_type_id', 'device_type_id');
+        return $this->belongsTo(DeviceType::class, 'device_type_id');
     }
 
     public function deviceExportDetails()

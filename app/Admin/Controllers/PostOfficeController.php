@@ -62,7 +62,7 @@ class PostOfficeController extends AdminController
         $show->field('post_office_name', __('Post office name'));
         $show->field('district_id', __('District'))->as(function ($district_id) {
             $district = District::findOrFail($district_id);
-            return $district->district_name . ' ('. $this->district_id .')';
+            return $district->district_name . ' ('. $district_id .')';
         });
 
         $show->relation('deviceExports', function ($grid) use ($id) {
